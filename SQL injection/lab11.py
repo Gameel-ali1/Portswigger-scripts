@@ -53,8 +53,8 @@ def bruter(url, proxies):
 def main():
     proxies = {'http':'http://127.0.0.1:8080', 'https':'http://127.0.0.1:8080'}
     if len(sys.argv) != 2:
-        print("[+] Usage: bruter <url>")
-        print("[+] Example: python3 bruter.py www.example.com")
+        print(f"[+] Usage: {sys.argv[0]} <url>")
+        print(f"[+] Example: python3 {sys.argv[0]} www.example.com")
 
     url = sys.argv[1]
     print("[+] Retrieving administrator password...")
